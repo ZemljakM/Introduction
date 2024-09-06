@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Introduction.Model;
+using Introduction.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -8,41 +10,21 @@ namespace Introduction.WebAPI.Controllers
     [ApiController]
     public class ClubPresidentController : ControllerBase
     {
-        private const string connectionString = "Host=localhost:5432;" +
-                "Username=postgres;" +
-                "Password=postgres;" +
-                "Database=WebDatabase";
+        
 
 
         [HttpPost]
-        public IActionResult PostClub([FromBody] ClubPresident clubPresident)
+        public IActionResult PostClubPresident([FromBody] ClubPresident clubPresident)
         {
-            try
+
+            ClubPresidentService service = new();
+            var isSuccessful = service.InsertClubPresident(clubPresident);
+            if (!isSuccessful)
             {
-                using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "INSERT INTO \"ClubPresident\" VALUES (@id, @firstName, @lastName);";
-                using var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
-                command.Parameters.AddWithValue("@firstName", clubPresident.FirstName);
-                command.Parameters.AddWithValue("@lastName", clubPresident.LastName);
-
-                connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
-
-                connection.Close();
-
-                if (numberOfCommits == 0)
-                {
-                    return NotFound();
-                }
-                return Ok("Successfully added.");
+                return BadRequest();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok();
         }
+       
     }
 }
