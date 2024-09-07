@@ -13,6 +13,6 @@
 
         public ClubPresident? ClubPresident { get; set; }
 
-        public Guid ClubPresidentId { get; set; }
+        public Guid? ClubPresidentId { get; set; }
     }
 }

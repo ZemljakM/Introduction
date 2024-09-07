@@ -145,7 +145,7 @@ namespace Introduction.Repository
                         club.DateOfEstablishment = dateResult;
 
                         club.NumberOfMembers = Int32.TryParse(reader[4].ToString(), out var numberResult) ? numberResult : null;
-                        club.ClubPresidentId = Guid.Parse(reader["ClubPresidentId"].ToString());
+                        club.ClubPresidentId = Guid.TryParse(reader["ClubPresidentId"].ToString(), out var result) ? result : null;
 
                         clubs.Add(club);
                     }
@@ -198,7 +198,10 @@ namespace Introduction.Repository
                     club.DateOfEstablishment = dateResult;
 
                     club.NumberOfMembers = Int32.TryParse(reader[4].ToString(), out var numberResult) ? numberResult : null;
-                    club.ClubPresidentId = Guid.Parse(reader["ClubPresidentId"].ToString());
+                    
+                    club.ClubPresidentId = Guid.TryParse(reader["ClubPresidentId"].ToString(), out var result) ? result : null;
+                    
+
                 }
                 if (club == null)
                 {
