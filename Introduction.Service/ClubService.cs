@@ -12,33 +12,33 @@ namespace Introduction.Service
     public class ClubService: IClubService
     {
 
-        public bool DeleteClub(Guid id)
+        public async Task<bool> DeleteClubAsync(Guid id)
         {
             ClubRepository repository = new();
-            return repository.DeleteClub(id);
+            return await repository.DeleteClubAsync(id);
         }
 
-        public bool InsertClub(Club club)
+        public async Task<bool> InsertClubAsync(Club club)
         {
             ClubRepository repository = new();
-            return repository.InsertClub(club);
+            return await repository.InsertClubAsync(club);
         }
 
-        public bool UpdateClub(Guid id, ClubUpdate club)
+        public async Task<bool> UpdateClubAsync(Guid id, ClubUpdate club)
         {
             ClubRepository repository = new();
-            var currentClub = repository.GetClubById(id);
+            var currentClub = await repository.GetClubByIdAsync(id);
             if (currentClub == null)
             {
                 return false;
             }
-            return repository.UpdateClub(id, club);
+            return await repository.UpdateClubAsync(id, club);
         }
 
-        public Club GetClubById(Guid id)
+        public async Task<Club> GetClubByIdAsync(Guid id)
         {
             ClubRepository repository = new();
-            var club = repository.GetClubById(id);
+            var club = await repository.GetClubByIdAsync(id);
             if (club == null)
             {
                 return null;
@@ -46,10 +46,10 @@ namespace Introduction.Service
             return club;
         }
 
-        public List<Club> GetAllClubs()
+        public async Task<List<Club>> GetAllClubsAsync()
         {
             ClubRepository repository = new();
-            var clubs = repository.GetAllClubs();
+            var clubs = await repository.GetAllClubsAsync();
             if (clubs is null)
             {
                 return null;

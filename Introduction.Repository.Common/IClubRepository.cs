@@ -9,14 +9,14 @@ namespace Introduction.Repository.Common
 {
     public interface IClubRepository
     {
-        public bool DeleteClub(Guid id);
+        public Task<bool> DeleteClubAsync(Guid id);
 
-        public bool InsertClub(Club club);
+        public Task<bool> InsertClubAsync(Club club);
 
-        public bool UpdateClub(Guid id, ClubUpdate club);
+        public Task<bool> UpdateClubAsync(Guid id, ClubUpdate club);
 
-        public List<Club> GetAllClubs();
+        public Task<List<Club>> GetAllClubsAsync();
 
-        public Club GetClubById(Guid id);
+        public Task<Club> GetClubByIdAsync(Guid id);
     }
 }

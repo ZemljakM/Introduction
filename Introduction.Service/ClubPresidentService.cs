@@ -6,10 +6,10 @@ namespace Introduction.Service
 {
     public class ClubPresidentService : IClubPresidentService
     {
-        public bool InsertClubPresident(ClubPresident clubPresident)
+        public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             ClubPresidentRepository repository = new();
-            return repository.InsertClubPresident(clubPresident);
+            return await repository.InsertClubPresidentAsync(clubPresident);
         }
 
     }

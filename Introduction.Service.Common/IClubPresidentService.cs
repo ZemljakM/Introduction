@@ -9,6 +9,6 @@ namespace Introduction.Service.Common
 {
     public interface IClubPresidentService
     {
-        public bool InsertClubPresident(ClubPresident clubPresident);
+        public Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident);
     }
 }

@@ -14,7 +14,7 @@ namespace Introduction.Repository
 
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
-        public bool InsertClubPresident(ClubPresident clubPresident)
+        public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace Introduction.Repository
 
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 connection.Close();
 

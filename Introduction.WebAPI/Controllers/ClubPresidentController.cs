@@ -14,11 +14,11 @@ namespace Introduction.WebAPI.Controllers
 
 
         [HttpPost]
-        public IActionResult PostClubPresident([FromBody] ClubPresident clubPresident)
+        public async Task<IActionResult> PostClubPresidentAsync([FromBody] ClubPresident clubPresident)
         {
 
             ClubPresidentService service = new();
-            var isSuccessful = service.InsertClubPresident(clubPresident);
+            var isSuccessful = await service.InsertClubPresidentAsync(clubPresident);
             if (!isSuccessful)
             {
                 return BadRequest();

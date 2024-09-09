@@ -1,6 +1,7 @@
 ﻿using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
+using System.Text;
 
 namespace Introduction.Repository
 {
@@ -10,7 +11,7 @@ namespace Introduction.Repository
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
 
-        public bool DeleteClub(Guid id)
+        public async Task<bool> DeleteClubAsync(Guid id)
         {
             try
             {
@@ -22,7 +23,7 @@ namespace Introduction.Repository
 
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 connection.Close();
 
@@ -40,7 +41,7 @@ namespace Introduction.Repository
 
 
 
-        public bool InsertClub(Club club)
+        public async Task<bool> InsertClubAsync(Club club)
         {
             try
             {
@@ -66,7 +67,7 @@ namespace Introduction.Repository
 
                 connection.Open();
 
-                var numberOfCommits = command.ExecuteNonQuery();
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 connection.Close();
 
@@ -84,20 +85,54 @@ namespace Introduction.Repository
         }
 
 
-        public bool UpdateClub(Guid id, ClubUpdate club)
+        public async Task<bool> UpdateClubAsync(Guid id, ClubUpdate club)
         {
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "UPDATE \"Club\" SET \"NumberOfMembers\" = @numberOfMembers WHERE \"Id\" = @id;";
-                using var command = new NpgsqlCommand(commandText, connection);
+                StringBuilder stringBuilder = new StringBuilder("UPDATE \"Club\" SET ");
+                //string commandText = "UPDATE \"Club\" SET \"NumberOfMembers\" = @numberOfMembers WHERE \"Id\" = @id;";
+                using var command = new NpgsqlCommand();
+                command.Connection = connection;
 
-                command.Parameters.AddWithValue("@numberOfMembers", club.NumberOfMembers);
+                if(club.Name != null)
+                {
+                    stringBuilder.Append("\"Name\"=@name, ");
+                    command.Parameters.AddWithValue("@name", club.Name);
+                }
+
+                if (club.Sport != null)
+                {
+                    stringBuilder.Append("\"Sport\"=@sport, ");
+                    command.Parameters.AddWithValue("@sport", club.Sport);
+                }
+
+                if (club.DateOfEstablishment.HasValue)
+                {
+                    stringBuilder.Append("\"DateOfEstablishment\"=@dateOfEstablishment, ");
+                    command.Parameters.AddWithValue("@dateOfEstablishment", club.DateOfEstablishment.Value);
+                }
+
+                if (club.NumberOfMembers != null)
+                {
+                    stringBuilder.Append("\"NumberOfMembers\"=@numberOfMembers, ");
+                    command.Parameters.AddWithValue("@numberOfMembers", club.NumberOfMembers);
+                }
+
+                if (club.ClubPresidentId.HasValue)
+                {
+                    stringBuilder.Append("\"ClubPresidentId\"=@clubPresidentId, ");
+                    command.Parameters.AddWithValue("@clubPresidentId", club.ClubPresidentId.Value);
+                }
+
+                stringBuilder.Length -= 2;
+                stringBuilder.Append(" WHERE \"Id\" = @id;");
                 command.Parameters.AddWithValue("@id", id);
+                command.CommandText = stringBuilder.ToString();
 
                 connection.Open();
-
-                var numberOfCommits = command.ExecuteNonQuery();
+                
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
 
                 connection.Close();
                 if (numberOfCommits == 0)
@@ -114,7 +149,7 @@ namespace Introduction.Repository
 
         }
 
-        public List<Club> GetAllClubs()
+        public async Task<List<Club>> GetAllClubsAsync()
         {
             try
             {
@@ -126,11 +161,11 @@ namespace Introduction.Repository
 
                 connection.Open();
 
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         Club club = new Club();
                         club.Id = Guid.Parse(reader["Id"].ToString());
@@ -166,7 +201,7 @@ namespace Introduction.Repository
 
         }
 
-        public Club GetClubById(Guid id)
+        public async Task<Club> GetClubByIdAsync(Guid id)
         {
             try
             {
@@ -180,11 +215,11 @@ namespace Introduction.Repository
 
                 connection.Open();
 
-                using NpgsqlDataReader reader = command.ExecuteReader();
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
 
                 if (reader.HasRows)
                 {
-                    reader.Read();
+                    await reader.ReadAsync();
 
                     club.Id = Guid.Parse(reader["Id"].ToString());
                     club.Name = reader["Name"].ToString();
