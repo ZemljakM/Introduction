@@ -46,16 +46,6 @@ namespace Introduction.Repository
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                /*string commandText = "INSERT INTO \"Club\" VALUES (@id, @name, @sport, @dateOfEstablishment, @numberOfMembers, @clubPresidentId);";
-                using var command = new NpgsqlCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
-                command.Parameters.AddWithValue("@name", club.Name);
-                command.Parameters.AddWithValue("@sport", club.Sport);
-                command.Parameters.AddWithValue("@dateOfEstablishment", club.DateOfEstablishment);
-                command.Parameters.AddWithValue("@numberOfMembers", club.NumberOfMembers);
-                command.Parameters.AddWithValue("@clubPresidentId", club.ClubPresidentId);*/
-
                 string commandText = "INSERT INTO \"Club\" VALUES (@id, @name, @sport, @dateOfEstablishment, @numberOfMembers);";
                 using var command = new NpgsqlCommand(commandText, connection);
 
@@ -91,7 +81,6 @@ namespace Introduction.Repository
             {
                 using var connection = new NpgsqlConnection(connectionString);
                 StringBuilder stringBuilder = new StringBuilder("UPDATE \"Club\" SET ");
-                //string commandText = "UPDATE \"Club\" SET \"NumberOfMembers\" = @numberOfMembers WHERE \"Id\" = @id;";
                 using var command = new NpgsqlCommand();
                 command.Connection = connection;
 
@@ -154,8 +143,11 @@ namespace Introduction.Repository
             try
             {
                 List<Club> clubs = new List<Club>();
+                
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT * FROM \"Club\";";
+                var commandText = "SELECT c.\"Name\", c.\"Sport\", c.\"DateOfEstablishment\", c.\"NumberOfMembers\", c.\"ClubPresidentId\", " +
+                    "cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" FROM \"Club\" c LEFT JOIN \"ClubPresident\" cp " +
+                    "ON c.\"ClubPresidentId\" = cp.\"Id\";";
 
                 using var command = new NpgsqlCommand(commandText, connection);
 
@@ -168,19 +160,24 @@ namespace Introduction.Repository
                     while (await reader.ReadAsync())
                     {
                         Club club = new Club();
+                        ClubPresident clubPresident = new ClubPresident();
                         club.Id = Guid.Parse(reader["Id"].ToString());
                         club.Name = reader["Name"].ToString();
                         club.Sport = reader["Sport"].ToString();
 
                         DateOnly? dateResult = null;
-                        if (DateTime.TryParse(reader[3].ToString(), out DateTime dateTimeResult))
+                        if (DateTime.TryParse(reader["DateOfEstablishment"].ToString(), out DateTime dateTimeResult))
                         {
                             dateResult = DateOnly.FromDateTime(dateTimeResult);
                         }
                         club.DateOfEstablishment = dateResult;
 
-                        club.NumberOfMembers = Int32.TryParse(reader[4].ToString(), out var numberResult) ? numberResult : null;
-                        club.ClubPresidentId = Guid.TryParse(reader["ClubPresidentId"].ToString(), out var result) ? result : null;
+                        club.NumberOfMembers = Int32.TryParse(reader["NumberOfMembers"].ToString(), out var numberResult) ? numberResult : null;
+                        clubPresident.Id = Guid.Parse(reader["Id"].ToString());
+                        club.ClubPresidentId = clubPresident.Id;
+                        clubPresident.FirstName = reader["FirstName"].ToString();
+                        clubPresident.LastName = reader["LastName"].ToString();
+                        club.ClubPresident = clubPresident;
 
                         clubs.Add(club);
                     }
@@ -206,8 +203,11 @@ namespace Introduction.Repository
             try
             {
                 Club club = new Club();
+                ClubPresident clubPresident = new ClubPresident();
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT * FROM \"Club\" WHERE \"Id\" = @id;";
+                var commandText = "SELECT c.\"Name\", c.\"Sport\", c.\"DateOfEstablishment\", c.\"NumberOfMembers\", c.\"ClubPresidentId\"," +
+                    " cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" FROM \"Club\" c LEFT JOIN \"ClubPresident\" cp " +
+                    "ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE c.\"Id\" = @id;";
 
                 using var command = new NpgsqlCommand(commandText, connection);
 
@@ -226,16 +226,19 @@ namespace Introduction.Repository
                     club.Sport = reader["Sport"].ToString();
 
                     DateOnly? dateResult = null;
-                    if (DateTime.TryParse(reader[3].ToString(), out DateTime dateTimeResult))
+                    if (DateTime.TryParse(reader["DateOfEstablishment"].ToString(), out DateTime dateTimeResult))
                     {
                         dateResult = DateOnly.FromDateTime(dateTimeResult);
                     }
                     club.DateOfEstablishment = dateResult;
 
-                    club.NumberOfMembers = Int32.TryParse(reader[4].ToString(), out var numberResult) ? numberResult : null;
+                    club.NumberOfMembers = Int32.TryParse(reader["NumberOfMembers"].ToString(), out var numberResult) ? numberResult : null;
                     
-                    club.ClubPresidentId = Guid.TryParse(reader["ClubPresidentId"].ToString(), out var result) ? result : null;
-                    
+                    clubPresident.Id = Guid.Parse(reader["Id"].ToString());
+                    club.ClubPresidentId = clubPresident.Id;
+                    clubPresident.FirstName = reader["FirstName"].ToString();
+                    clubPresident.LastName = reader["LastName"].ToString();
+                    club.ClubPresident = clubPresident;
 
                 }
                 if (club == null)

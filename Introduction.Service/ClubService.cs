@@ -43,20 +43,12 @@ namespace Introduction.Service
         public async Task<Club> GetClubByIdAsync(Guid id)
         {
             var club = await _repository.GetClubByIdAsync(id);
-            if (club == null)
-            {
-                return null;
-            }
             return club;
         }
 
         public async Task<List<Club>> GetAllClubsAsync()
         {
             var clubs = await _repository.GetAllClubsAsync();
-            if (clubs is null)
-            {
-                return null;
-            }
             return clubs;
         }
 

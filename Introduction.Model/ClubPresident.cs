@@ -8,5 +8,7 @@
 
         public string? LastName { get; set; }
 
+        public List<Club>? Clubs { get; set; } = new List<Club>();
+
     }
 }

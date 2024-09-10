@@ -20,6 +20,33 @@ namespace Introduction.WebAPI.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllClubPresidentsAsync()
+        {
+            var presidents = await _service.GetAllClubPresidentsAsync();
+            if (presidents is null)
+            {
+                return NotFound();
+            }
+            return Ok(presidents);
+
+        }
+
+
+        [HttpGet]
+        [Route("{id}")]
+
+        public async Task<IActionResult> GetClubPresidentsByIdAsync(Guid id)
+        {
+            var president = await _service.GetClubPresidentByIdAsync(id);
+            if (president == null)
+            {
+                return NotFound();
+            }
+            return Ok(president);
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> PostClubPresidentAsync([FromBody] ClubPresident clubPresident)

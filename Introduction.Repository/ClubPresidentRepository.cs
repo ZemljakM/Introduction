@@ -14,6 +14,100 @@ namespace Introduction.Repository
 
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
+
+        public async Task<List<ClubPresident>> GetAllClubPresidentsAsync()
+        {
+            try
+            {
+                List<ClubPresident> clubPresidents = new List<ClubPresident>();
+                using var connection = new NpgsqlConnection(connectionString);
+                var commandText = "SELECT * FROM \"ClubPresident\";";
+
+                using var command = new NpgsqlCommand(commandText, connection);
+
+                connection.Open();
+
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows)
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        ClubPresident clubPresident = new ClubPresident();
+
+                        clubPresident.Id = Guid.Parse(reader["Id"].ToString());
+                        clubPresident.FirstName = reader["FirstName"].ToString();
+                        clubPresident.LastName = reader["LastName"].ToString();
+                        clubPresidents.Add(clubPresident);
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+                return clubPresidents;
+
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<ClubPresident> GetClubPresidentByIdAsync(Guid id)
+        {
+            try
+            {
+                ClubPresident clubPresident = new ClubPresident();
+                using var connection = new NpgsqlConnection(connectionString);
+                var commandText = "SELECT c.\"Name\", c.\"Sport\", cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
+                    "FROM \"ClubPresident\" cp LEFT JOIN \"Club\" c " +
+                    "ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE cp.\"Id\" = @id;";
+
+                using var command = new NpgsqlCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@id", id);
+
+                connection.Open();
+
+                using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
+
+                if (reader.HasRows)
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Club club = new Club();
+                        
+
+                        clubPresident.Id = Guid.Parse(reader["Id"].ToString());
+                        clubPresident.FirstName = reader["FirstName"].ToString();
+                        clubPresident.LastName = reader["LastName"].ToString();
+
+                        club.Name = reader["Name"].ToString();
+                        club.Sport = reader["Sport"].ToString();
+                        clubPresident.Clubs.Add(club);
+                        
+                    }
+
+
+                }
+                if (clubPresident == null)
+                {
+                    return null;
+                }
+                return clubPresident;
+
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+
         public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             try

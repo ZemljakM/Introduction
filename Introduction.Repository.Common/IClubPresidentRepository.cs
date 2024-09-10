@@ -9,6 +9,10 @@ namespace Introduction.Repository.Common
 {
     public interface IClubPresidentRepository
     {
+        public Task<List<ClubPresident>> GetAllClubPresidentsAsync();
+
+        public Task<ClubPresident> GetClubPresidentByIdAsync(Guid id);
+
         public Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident);
     }
 }

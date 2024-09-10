@@ -9,6 +9,10 @@ namespace Introduction.Service.Common
 {
     public interface IClubPresidentService
     {
+        public Task<ClubPresident> GetClubPresidentByIdAsync(Guid id);
+
+        public Task<List<ClubPresident>> GetAllClubPresidentsAsync();
+
         public Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident);
     }
 }

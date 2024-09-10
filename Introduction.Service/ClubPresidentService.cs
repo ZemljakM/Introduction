@@ -15,6 +15,19 @@ namespace Introduction.Service
         }
 
 
+        public async Task<ClubPresident> GetClubPresidentByIdAsync(Guid id)
+        {
+            return await _repository.GetClubPresidentByIdAsync(id);
+             
+        }
+
+        public async Task<List<ClubPresident>> GetAllClubPresidentsAsync()
+        {
+            return  await _repository.GetAllClubPresidentsAsync();
+            
+        }
+
+
         public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             return await _repository.InsertClubPresidentAsync(clubPresident);
