@@ -61,7 +61,7 @@ namespace Introduction.Repository
             {
                 ClubPresident clubPresident = new ClubPresident();
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT c.\"Name\", c.\"Sport\", cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
+                var commandText = "SELECT c.\"Name\", c.\"Sport\", c.\"Id\" as \"ClubId\", cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
                     "FROM \"ClubPresident\" cp LEFT JOIN \"Club\" c " +
                     "ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE cp.\"Id\" = @id;";
 
@@ -84,6 +84,7 @@ namespace Introduction.Repository
                         clubPresident.FirstName = reader["FirstName"].ToString();
                         clubPresident.LastName = reader["LastName"].ToString();
 
+                        club.Id = Guid.TryParse(reader["ClubId"].ToString(), out var result) ? result: Guid.Empty;
                         club.Name = reader["Name"].ToString();
                         club.Sport = reader["Sport"].ToString();
                         clubPresident.Clubs.Add(club);
@@ -92,7 +93,7 @@ namespace Introduction.Repository
 
 
                 }
-                if (clubPresident == null)
+                else
                 {
                     return null;
                 }

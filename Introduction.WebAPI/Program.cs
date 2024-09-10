@@ -17,10 +17,9 @@ builder.Host
     .UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>((container) =>
     {
-        container.RegisterType<ClubRepository>().As<IClubRepository>().InstancePerDependency();
-        container.RegisterType<ClubPresidentRepository>().As<IClubPresidentRepository>().InstancePerDependency();
-        container.RegisterType<ClubService>().As<IClubService>().InstancePerDependency();
-        container.RegisterType<ClubPresidentService>().As<IClubPresidentService>().InstancePerDependency();
+        
+        container.RegisterModule<ServiceDIModule>();
+        container.RegisterModule<RepositoryDIModule>();
 
     });
 
