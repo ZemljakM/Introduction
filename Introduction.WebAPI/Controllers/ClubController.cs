@@ -1,5 +1,6 @@
 ﻿using Introduction.Model;
 using Introduction.Service;
+using Introduction.Service.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,20 @@ namespace Introduction.WebAPI.Controllers
     [ApiController]
     public class ClubController : ControllerBase
     {
+        private IClubService _service;
+
+        public ClubController(IClubService service) 
+        {
+            _service = service;
+        }
+
+
+
         [HttpGet]
 
         public async Task<IActionResult> GetAllClubsAsync()
         {
-            ClubService service = new();
-            var clubs = await service.GetAllClubsAsync();
+            var clubs = await _service.GetAllClubsAsync();
             if (clubs is null)
             {
                 return NotFound();
@@ -33,8 +42,7 @@ namespace Introduction.WebAPI.Controllers
 
         public async Task<IActionResult> GetClubByIdAsync(Guid id)
         {
-            ClubService service = new();
-            var club = await service.GetClubByIdAsync(id);
+            var club = await _service.GetClubByIdAsync(id);
             if (club == null)
             {
                 return NotFound();
@@ -47,9 +55,7 @@ namespace Introduction.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostClubAsync([FromBody] Club club)
         {
-
-            ClubService service = new();
-            var isSuccessful = await service.InsertClubAsync(club);
+            var isSuccessful = await _service.InsertClubAsync(club);
             if (!isSuccessful)
             {
                 return BadRequest();
@@ -63,8 +69,7 @@ namespace Introduction.WebAPI.Controllers
 
         public async Task<IActionResult> UpdateClubAsync(Guid id, [FromBody] ClubUpdate club)
         {
-            ClubService service = new();
-            var isSuccessful = await service.UpdateClubAsync(id, club);
+            var isSuccessful = await _service.UpdateClubAsync(id, club);
             if (!isSuccessful)
             {
                 return BadRequest();
@@ -77,8 +82,7 @@ namespace Introduction.WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClubAsync(Guid id)
         {
-            ClubService service = new();
-            var isSuccessful = await service.DeleteClubAsync(id);
+            var isSuccessful = await _service.DeleteClubAsync(id);
             if (!isSuccessful)
             {
                 return BadRequest();

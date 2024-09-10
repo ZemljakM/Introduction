@@ -1,5 +1,6 @@
 ﻿using Introduction.Model;
 using Introduction.Service;
+using Introduction.Service.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -10,15 +11,20 @@ namespace Introduction.WebAPI.Controllers
     [ApiController]
     public class ClubPresidentController : ControllerBase
     {
-        
+
+        private IClubPresidentService _service;
+
+        public ClubPresidentController(IClubPresidentService service)
+        {
+            _service = service;
+        }
+
 
 
         [HttpPost]
         public async Task<IActionResult> PostClubPresidentAsync([FromBody] ClubPresident clubPresident)
         {
-
-            ClubPresidentService service = new();
-            var isSuccessful = await service.InsertClubPresidentAsync(clubPresident);
+            var isSuccessful = await _service.InsertClubPresidentAsync(clubPresident);
             if (!isSuccessful)
             {
                 return BadRequest();
