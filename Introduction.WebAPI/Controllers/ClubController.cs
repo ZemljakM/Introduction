@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Service;
 using Introduction.Service.Common;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +26,34 @@ namespace Introduction.WebAPI.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetAllClubsAsync()
+        public async Task<IActionResult> GetAllClubsAsync(string name = "", string sport = "", DateOnly? dateFrom = null,
+            DateOnly? dateTo = null, int membersFrom = 0, int membersTo = 0, string president = "", int rpp = 3, 
+            int pageNumber = 1, string orderBy = "FirstName", string orderDirection = "ASC")
         {
-            var clubs = await _service.GetAllClubsAsync();
+            Sorting sorting = new Sorting
+            {
+                OrderBy = orderBy,
+                OrderDirection = orderDirection
+            };
+
+            Paging paging = new Paging
+            {
+                Rpp = rpp,
+                PageNumber = pageNumber
+            };
+
+            ClubFilter filter = new ClubFilter
+            {
+                Name = name,
+                Sport = sport,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                MembersFrom = membersFrom,
+                MembersTo = membersTo,
+                President = president
+            };
+
+            var clubs = await _service.GetAllClubsAsync(sorting, paging, filter);
             if (clubs is null)
             {
                 return NotFound();

@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
 using System.Text;
@@ -138,19 +139,68 @@ namespace Introduction.Repository
 
         }
 
-        public async Task<List<Club>> GetAllClubsAsync()
+        public async Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter)
         {
             try
             {
                 List<Club> clubs = new List<Club>();
-                
+
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT c.\"Name\", c.\"Sport\", c.\"DateOfEstablishment\", c.\"NumberOfMembers\", c.\"ClubPresidentId\", " +
-                    "cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" FROM \"Club\" c LEFT JOIN \"ClubPresident\" cp " +
-                    "ON c.\"ClubPresidentId\" = cp.\"Id\";";
+                StringBuilder stringBuilder = new StringBuilder("SELECT c.\"Name\", c.\"Sport\", c.\"DateOfEstablishment\", " +
+                    "c.\"NumberOfMembers\", c.\"ClubPresidentId\", cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
+                    "FROM \"Club\" c LEFT JOIN \"ClubPresident\" cp ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE 1=1 ");
+                using var command = new NpgsqlCommand();
+                command.Connection = connection;
 
-                using var command = new NpgsqlCommand(commandText, connection);
+                if (filter != null)
+                {
+                    if (!string.IsNullOrEmpty(filter.Name))
+                    {
+                        stringBuilder.Append(" AND \"Name\" ILIKE @name ");
+                        command.Parameters.AddWithValue("@name", StringExtension.AddWildcardBoth(filter.Name));
+                    }
+                    if (!string.IsNullOrEmpty(filter.Sport))
+                    {
+                        stringBuilder.Append(" AND \"Sport\" = @sport ");
+                        command.Parameters.AddWithValue("@sport", filter.Sport);
+                    }
+                    if (filter.DateFrom != null)
+                    {
+                        stringBuilder.Append(" AND \"DateOfEstablishment\" > @dateFrom ");
+                        command.Parameters.AddWithValue("@dateFrom", filter.DateFrom);
+                    }
+                    if (filter.DateTo != null)
+                    {
+                        stringBuilder.Append(" AND \"DateOfEstablishment\" < @dateTo ");
+                        command.Parameters.AddWithValue("@dateTo", filter.DateTo);
+                    }
+                    if (filter.MembersFrom != 0)
+                    {
+                        stringBuilder.Append(" AND \"NumberOfMembers\" > @membersFrom ");
+                        command.Parameters.AddWithValue("@membersFrom", filter.MembersFrom);
+                    }
+                    if (filter.MembersTo != 0)
+                    {
+                        stringBuilder.Append(" AND \"NumberOfMembers\" < @membersTo ");
+                        command.Parameters.AddWithValue("@membersTo", filter.MembersTo);
+                    }
+                    if (!string.IsNullOrEmpty(filter.President))
+                    {
+                        stringBuilder.Append(" AND (CONCAT(\"FirstName\", ' ', \"LastName\") ILIKE @president " +
+                        "OR CONCAT(\"LastName\", ' ', \"FirstName\") ILIKE @president) ");
+                        command.Parameters.AddWithValue("@president", StringExtension.AddWildcardBoth(filter.President));
+                    }
+                }
 
+
+
+
+                stringBuilder.Append($" ORDER BY \"{sorting.OrderBy}\" {sorting.OrderDirection} " +
+                    $"OFFSET @offset ROWS FETCH NEXT @nextRows ROWS ONLY;");
+                command.Parameters.AddWithValue("@offset", paging.Rpp * (paging.PageNumber - 1));
+                command.Parameters.AddWithValue("@nextRows", paging.Rpp);
+
+                command.CommandText = stringBuilder.ToString();
                 connection.Open();
 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();

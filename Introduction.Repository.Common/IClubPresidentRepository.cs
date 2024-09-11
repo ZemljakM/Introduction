@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Introduction.Repository.Common
 {
     public interface IClubPresidentRepository
     {
-        public Task<List<ClubPresident>> GetAllClubPresidentsAsync();
+        public Task<List<ClubPresident>> GetAllClubPresidentsAsync(Sorting sorting, Paging paging, ClubPresidentFilter filter);
 
         public Task<ClubPresident> GetClubPresidentByIdAsync(Guid id);
 

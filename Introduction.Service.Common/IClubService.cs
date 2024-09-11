@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,6 @@ namespace Introduction.Service.Common
 
         public Task<Club> GetClubByIdAsync(Guid id);
 
-        public Task<List<Club>> GetAllClubsAsync();
+        public Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter);
     }
 }

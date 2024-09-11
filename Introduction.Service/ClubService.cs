@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository;
 using Introduction.Repository.Common;
 using Introduction.Service.Common;
@@ -46,9 +47,9 @@ namespace Introduction.Service
             return club;
         }
 
-        public async Task<List<Club>> GetAllClubsAsync()
+        public async Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter)
         {
-            var clubs = await _repository.GetAllClubsAsync();
+            var clubs = await _repository.GetAllClubsAsync(sorting, paging, filter);
             return clubs;
         }
 

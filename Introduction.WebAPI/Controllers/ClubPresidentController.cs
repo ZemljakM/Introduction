@@ -1,9 +1,11 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Service;
 using Introduction.Service.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+
 
 namespace Introduction.WebAPI.Controllers
 {
@@ -21,9 +23,25 @@ namespace Introduction.WebAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllClubPresidentsAsync()
+        public async Task<IActionResult> GetAllClubPresidentsAsync(string searchQuery = "", int rpp = 3, int pageNumber = 1, string orderBy = "Id", string orderDirection = "DESC")
         {
-            var presidents = await _service.GetAllClubPresidentsAsync();
+            Sorting sorting = new Sorting 
+            {
+                OrderBy = orderBy,
+                OrderDirection = orderDirection
+            };
+
+            Paging paging = new Paging
+            {
+                Rpp = rpp,
+                PageNumber = pageNumber
+            };
+
+            ClubPresidentFilter filter = new ClubPresidentFilter
+            {
+                SearchQuery = searchQuery
+            };
+            var presidents = await _service.GetAllClubPresidentsAsync(sorting, paging, filter);
             if (presidents is null)
             {
                 return NotFound();

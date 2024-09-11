@@ -1,4 +1,5 @@
-﻿using Introduction.Model;
+﻿using Introduction.Common;
+using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
 using System;
@@ -15,16 +16,31 @@ namespace Introduction.Repository
         private const string connectionString = "Host=localhost:5432;Username=postgres;Password=postgres;Database=WebDatabase";
 
 
-        public async Task<List<ClubPresident>> GetAllClubPresidentsAsync()
+        public async Task<List<ClubPresident>> GetAllClubPresidentsAsync(Sorting sorting, Paging paging, ClubPresidentFilter filter)
         {
             try
             {
-                List<ClubPresident> clubPresidents = new List<ClubPresident>();
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT * FROM \"ClubPresident\";";
+                StringBuilder stringBuilder = new StringBuilder("SELECT * FROM \"ClubPresident\" ");
+                using var command = new NpgsqlCommand();
+                command.Connection = connection;
 
-                using var command = new NpgsqlCommand(commandText, connection);
+                if (!string.IsNullOrEmpty(filter.SearchQuery))
+                {
+                    stringBuilder.Append(" WHERE CONCAT(\"FirstName\", ' ', \"LastName\") ILIKE @searchQuery " +
+                        "OR CONCAT(\"LastName\", ' ', \"FirstName\") ILIKE @searchQuery ");
+                    command.Parameters.AddWithValue("@searchQuery", StringExtension.AddWildcardSuffix(filter.SearchQuery));
+                }
 
+
+                stringBuilder.Append($" ORDER BY \"{sorting.OrderBy}\" {sorting.OrderDirection} " +
+                    $"OFFSET @offset ROWS FETCH NEXT @nextRows ROWS ONLY;" );
+                command.Parameters.AddWithValue("@offset", paging.Rpp * (paging.PageNumber - 1));
+                command.Parameters.AddWithValue("@nextRows", paging.Rpp);
+
+                List<ClubPresident> clubPresidents = new List<ClubPresident>();
+
+                command.CommandText = stringBuilder.ToString();
                 connection.Open();
 
                 using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
