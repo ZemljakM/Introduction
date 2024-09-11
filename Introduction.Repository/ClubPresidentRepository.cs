@@ -155,5 +155,51 @@ namespace Introduction.Repository
             }
 
         }
+
+
+        public async Task<bool> UpdateClubPresidentAsync(Guid id, ClubPresident clubPresident)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(connectionString);
+                StringBuilder stringBuilder = new StringBuilder("UPDATE \"ClubPresident\" SET ");
+                using var command = new NpgsqlCommand();
+                command.Connection = connection;
+
+                if (clubPresident.FirstName != null)
+                {
+                    stringBuilder.Append("\"FirstName\"=@firstName, ");
+                    command.Parameters.AddWithValue("@firstName", clubPresident.FirstName);
+                }
+
+                if (clubPresident.LastName != null)
+                {
+                    stringBuilder.Append("\"LastName\"=@lastName, ");
+                    command.Parameters.AddWithValue("@lastName", clubPresident.LastName);
+                }
+
+
+                stringBuilder.Length -= 2;
+                stringBuilder.Append(" WHERE \"Id\" = @id;");
+                command.Parameters.AddWithValue("@id", id);
+                command.CommandText = stringBuilder.ToString();
+
+                connection.Open();
+
+                var numberOfCommits = await command.ExecuteNonQueryAsync();
+
+                connection.Close();
+                if (numberOfCommits == 0)
+                {
+                    return false;
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

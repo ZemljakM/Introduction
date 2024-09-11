@@ -34,5 +34,14 @@ namespace Introduction.Service
             return await _repository.InsertClubPresidentAsync(clubPresident);
         }
 
+        public async Task<bool> UpdateClubPresidentAsync(Guid id, ClubPresident clubPresident)
+        {
+            var currentPresident = await _repository.GetClubPresidentByIdAsync(id);
+            if (currentPresident == null)
+            {
+                return false;
+            }
+            return await _repository.UpdateClubPresidentAsync(id, clubPresident);
+        }
     }
 }

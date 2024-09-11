@@ -14,7 +14,7 @@ namespace Introduction.Service.Common
 
         public Task<bool> InsertClubAsync(Club club);
 
-        public Task<bool> UpdateClubAsync(Guid id, ClubUpdate club);
+        public Task<bool> UpdateClubAsync(Guid id, Club club);
 
         public Task<Club> GetClubByIdAsync(Guid id);
 

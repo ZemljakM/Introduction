@@ -76,7 +76,7 @@ namespace Introduction.Repository
         }
 
 
-        public async Task<bool> UpdateClubAsync(Guid id, ClubUpdate club)
+        public async Task<bool> UpdateClubAsync(Guid id, Club club)
         {
             try
             {
@@ -191,8 +191,6 @@ namespace Introduction.Repository
                         command.Parameters.AddWithValue("@president", StringExtension.AddWildcardBoth(filter.President));
                     }
                 }
-
-
 
 
                 stringBuilder.Append($" ORDER BY \"{sorting.OrderBy}\" {sorting.OrderDirection} " +

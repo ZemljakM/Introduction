@@ -15,5 +15,7 @@ namespace Introduction.Service.Common
         public Task<List<ClubPresident>> GetAllClubPresidentsAsync(Sorting sorting, Paging paging, ClubPresidentFilter filter);
 
         public Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident);
+
+        public Task<bool> UpdateClubPresidentAsync(Guid id, ClubPresident clubPresident);
     }
 }

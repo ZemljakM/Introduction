@@ -93,8 +93,16 @@ namespace Introduction.WebAPI.Controllers
         [HttpPut]
         [Route("{id}")]
 
-        public async Task<IActionResult> UpdateClubAsync(Guid id, [FromBody] ClubUpdate club)
+        public async Task<IActionResult> UpdateClubAsync(Guid id, [FromBody] ClubUpdate clubUpdate)
         {
+            var club = new Club();
+
+            club.Name = clubUpdate.Name;
+            club.Sport = clubUpdate.Sport;
+            club.DateOfEstablishment = clubUpdate.DateOfEstablishment;
+            club.NumberOfMembers = clubUpdate.NumberOfMembers;
+            club.ClubPresidentId = clubUpdate.ClubPresidentId;
+
             var isSuccessful = await _service.UpdateClubAsync(id, club);
             if (!isSuccessful)
             {

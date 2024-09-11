@@ -14,7 +14,7 @@ namespace Introduction.Repository.Common
 
         public Task<bool> InsertClubAsync(Club club);
 
-        public Task<bool> UpdateClubAsync(Guid id, ClubUpdate club);
+        public Task<bool> UpdateClubAsync(Guid id, Club club);
 
         public Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter);
 

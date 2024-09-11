@@ -31,7 +31,7 @@ namespace Introduction.Service
             return await _repository.InsertClubAsync(club);
         }
 
-        public async Task<bool> UpdateClubAsync(Guid id, ClubUpdate club)
+        public async Task<bool> UpdateClubAsync(Guid id, Club club)
         {
             var currentClub = await _repository.GetClubByIdAsync(id);
             if (currentClub == null)
