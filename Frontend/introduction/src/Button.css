@@ -1,0 +1,13 @@
+button {
+    width: 8em; 
+    background-color: #967aa1; 
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px; 
+    text-align: center;
+    font-size: 1rem; 
+    align-self: last baseline;
+}
