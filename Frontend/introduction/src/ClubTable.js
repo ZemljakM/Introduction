@@ -2,8 +2,6 @@ import ClubRow from './ClubRow';
 import './ClubTable.css';
 
 function ClubTable({ clubs, deleteClub, updateClub }) {
-    const rows = clubs.map((club) => (<ClubRow key={club.id} club={club} deleteClub={deleteClub} updateClub={updateClub}/>));
-  
     return (
       <table>
         <thead>
@@ -15,7 +13,7 @@ function ClubTable({ clubs, deleteClub, updateClub }) {
             <th>President</th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody>{clubs.map((club) => (<ClubRow key={club.id} club={club} deleteClub={deleteClub} updateClub={updateClub}/>))}</tbody>
       </table>
     );
   }

@@ -13,7 +13,8 @@ function AddClub({clubs, setList}){
 
     function handleSubmit(e){
         e.preventDefault();
-        const newClub = {...club, id: clubs.length + 1};
+        const newId = clubs.length > 0 ? Math.max(...clubs.map(c => c.id)) : 0;
+        const newClub = {...club, id: newId + 1};
         setList([...clubs, newClub]);  
         setClub({name: "", sport: "", dateOfEstablishment: "", members: "", president: "" });
     }
@@ -26,15 +27,15 @@ function AddClub({clubs, setList}){
                     <input 
                         type = "text"
                         name = "name"
-                        value = {club.name}
+                        value = {club.name || ''}
                         onInput = {handleChange}
                         required
                     />
                 </div>
                 <div>
                     <label>Sport: </label>
-                    <select name = "sport" value = {club.sport} onInput = {handleChange} required>
-                        <option value="" selected disabled hidden>Select a sport</option>
+                    <select name = "sport" defaultValue="" onInput = {handleChange} required>
+                        <option value="" disabled hidden>Select a sport</option>
                         <option value="Football">Football</option>
                         <option value="Handball">Handball</option>
                         <option value="Basketball">Basketball</option>
@@ -47,7 +48,7 @@ function AddClub({clubs, setList}){
                     <input 
                         type = "date"
                         name = "dateOfEstablishment"
-                        value = {club.dateOfEstablishment}
+                        value = {club.dateOfEstablishment || ''}
                         onInput = {handleChange}
                         required
                     />
@@ -57,7 +58,7 @@ function AddClub({clubs, setList}){
                     <input 
                         type = "number"
                         name = "members"
-                        value = {club.members}
+                        value = {club.members || ''}
                         onInput = {handleChange}
                         required
                     />
@@ -67,7 +68,7 @@ function AddClub({clubs, setList}){
                     <input 
                         type = "text"
                         name = "president"
-                        value = {club.president}
+                        value = {club.president || ''}
                         onInput = {handleChange}
                         required
                     />

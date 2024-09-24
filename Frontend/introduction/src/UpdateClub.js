@@ -9,7 +9,7 @@ function UpdateClub({clubs, setList, clubId, setEditClubId}){
     const [club, setClub] = useState({...clubToUpdate});
 
     function handleChange(e){
-        setClub({...clubToUpdate, [e.target.name] : e.target.value});
+        setClub({...club, [e.target.name] : e.target.value});
     }
 
     function handleSubmit(e){
@@ -34,8 +34,7 @@ function UpdateClub({clubs, setList, clubId, setEditClubId}){
                 </div>
                 <div>
                     <label>Sport: </label>
-                    <select name = "sport" value = {club.sport} onInput = {handleChange} required>
-                        <option value="" selected disabled hidden>Select a sport</option>
+                    <select name = "sport" onInput = {handleChange} required>
                         <option value="Football">Football</option>
                         <option value="Handball">Handball</option>
                         <option value="Basketball">Basketball</option>

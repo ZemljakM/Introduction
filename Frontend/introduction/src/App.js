@@ -14,7 +14,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('clubs', JSON.stringify(list));
+    if (list.length > 0) {
+      localStorage.setItem('clubs', JSON.stringify(list));
+    }
   }, [list]);
 
 
