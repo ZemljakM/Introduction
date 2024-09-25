@@ -78,6 +78,16 @@ namespace Introduction.WebAPI.Controllers
         }
 
 
+        [HttpGet]
+        [Route("Count")]
+
+        public async Task<IActionResult> CountClubs()
+        {
+            var numberOfClubs = await _service.CountClubs();
+            return Ok(numberOfClubs);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> PostClubAsync([FromBody] Club club)
         {

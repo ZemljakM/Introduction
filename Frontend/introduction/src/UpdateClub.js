@@ -1,7 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import Button from './Button';
-import './AddClub.css'
+import './AddClub.css';
+import axios from 'axios';
 
 
 function UpdateClub({clubs, setList, clubId, setEditClubId}){
@@ -12,11 +13,19 @@ function UpdateClub({clubs, setList, clubId, setEditClubId}){
         setClub({...club, [e.target.name] : e.target.value});
     }
 
-    function handleSubmit(e){
+
+    async function handleSubmit(e){
         e.preventDefault();
-        const updatedList = clubs.map(c => c.id === clubId ? {...club} : c);
-        setList(updatedList);
-        setEditClubId(null);
+        try{
+            const response = await axios.put("https://localhost:7056/api/Club" + `/${clubId}`, club);
+            if(response.status === 200){
+                alert("Successfully updated.");
+                setEditClubId(null);
+            }
+        }
+        catch(error){
+            alert(error.message);
+        }
     }
 
     return (
@@ -56,8 +65,8 @@ function UpdateClub({clubs, setList, clubId, setEditClubId}){
                     <label>Number of members: </label>
                     <input 
                         type = "number"
-                        name = "members"
-                        value = {club.members}
+                        name = "numberOfMembers"
+                        value = {club.numberOfMembers}
                         onInput = {handleChange}
                         required
                     />
@@ -66,8 +75,8 @@ function UpdateClub({clubs, setList, clubId, setEditClubId}){
                     <label>President: </label>
                     <input 
                         type = "text"
-                        name = "president"
-                        value = {club.president}
+                        name = "clubPresidentId"
+                        value = {club.clubPresidentId}
                         onInput = {handleChange}
                         required
                     />

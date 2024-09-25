@@ -90,12 +90,12 @@ namespace Introduction.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostClubPresidentAsync([FromBody] ClubPresident clubPresident)
         {
-            var isSuccessful = await _service.InsertClubPresidentAsync(clubPresident);
-            if (!isSuccessful)
+            var returnedGuid = await _service.InsertClubPresidentAsync(clubPresident);
+            if (returnedGuid == null)
             {
                 return BadRequest();
             }
-            return Ok();
+            return Ok(returnedGuid);
         }
 
 

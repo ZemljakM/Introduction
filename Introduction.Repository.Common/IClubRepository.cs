@@ -19,5 +19,7 @@ namespace Introduction.Repository.Common
         public Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter);
 
         public Task<Club> GetClubByIdAsync(Guid id);
+
+        public Task<int> CountClubs();
     }
 }

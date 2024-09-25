@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import './AddClub.css';
 import Button from './Button';
+import axios from 'axios';
 
 function AddClub({clubs, setList}){
     const [club, setClub] = useState({});
@@ -11,12 +12,17 @@ function AddClub({clubs, setList}){
         setClub({...club, [e.target.name] : e.target.value});
     }
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
-        const newId = clubs.length > 0 ? Math.max(...clubs.map(c => c.id)) : 0;
-        const newClub = {...club, id: newId + 1};
-        setList([...clubs, newClub]);  
-        setClub({name: "", sport: "", dateOfEstablishment: "", members: "", president: "" });
+        try{
+            const response = await axios.post("https://localhost:7056/api/Club", club);
+            if(response.status === 200){
+                setClub({name: "", sport: "", dateOfEstablishment: "", numberOfMembers: "", clubPresidentId: "" });
+            }
+        }
+        catch(error){
+            alert(error.message);
+        }
     }
 
     return (
@@ -57,8 +63,8 @@ function AddClub({clubs, setList}){
                     <label>Number of members: </label>
                     <input 
                         type = "number"
-                        name = "members"
-                        value = {club.members || ''}
+                        name = "numberOfMembers"
+                        value = {club.numberOfMembers || ''}
                         onInput = {handleChange}
                         required
                     />
@@ -67,8 +73,8 @@ function AddClub({clubs, setList}){
                     <label>President: </label>
                     <input 
                         type = "text"
-                        name = "president"
-                        value = {club.president || ''}
+                        name = "clubPresidentId"
+                        value = {club.clubPresidentId || ''}
                         onInput = {handleChange}
                         required
                     />

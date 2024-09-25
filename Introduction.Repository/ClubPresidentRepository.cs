@@ -125,7 +125,7 @@ namespace Introduction.Repository
 
 
 
-        public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
+        public async Task<Guid?> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             try
             {
@@ -133,7 +133,8 @@ namespace Introduction.Repository
                 string commandText = "INSERT INTO \"ClubPresident\" VALUES (@id, @firstName, @lastName);";
                 using var command = new NpgsqlCommand(commandText, connection);
 
-                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
+                var newGuid = Guid.NewGuid();
+                command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, newGuid);
                 command.Parameters.AddWithValue("@firstName", clubPresident.FirstName);
                 command.Parameters.AddWithValue("@lastName", clubPresident.LastName);
 
@@ -145,13 +146,13 @@ namespace Introduction.Repository
 
                 if (numberOfCommits == 0)
                 {
-                    return false;
+                    return null;
                 }
-                return true;
+                return newGuid;
             }
             catch (Exception ex)
             {
-                return false;
+                return null;
             }
 
         }

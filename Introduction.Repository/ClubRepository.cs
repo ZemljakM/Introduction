@@ -47,7 +47,7 @@ namespace Introduction.Repository
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                string commandText = "INSERT INTO \"Club\" VALUES (@id, @name, @sport, @dateOfEstablishment, @numberOfMembers);";
+                string commandText = "INSERT INTO \"Club\" VALUES (@id, @name, @sport, @dateOfEstablishment, @numberOfMembers, @clubPresidentId);";
                 using var command = new NpgsqlCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id", NpgsqlTypes.NpgsqlDbType.Uuid, Guid.NewGuid());
@@ -55,6 +55,7 @@ namespace Introduction.Repository
                 command.Parameters.AddWithValue("@sport", club.Sport);
                 command.Parameters.AddWithValue("@dateOfEstablishment", club.DateOfEstablishment);
                 command.Parameters.AddWithValue("@numberOfMembers", club.NumberOfMembers);
+                command.Parameters.AddWithValue("@clubPresidentId", NpgsqlTypes.NpgsqlDbType.Uuid, club.ClubPresidentId);
 
                 connection.Open();
 
@@ -147,7 +148,7 @@ namespace Introduction.Repository
 
                 using var connection = new NpgsqlConnection(connectionString);
                 StringBuilder stringBuilder = new StringBuilder("SELECT c.\"Name\", c.\"Sport\", c.\"DateOfEstablishment\", " +
-                    "c.\"NumberOfMembers\", c.\"ClubPresidentId\", cp.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
+                    "c.\"NumberOfMembers\", c.\"ClubPresidentId\", c.\"Id\", cp.\"FirstName\", cp.\"LastName\" " +
                     "FROM \"Club\" c LEFT JOIN \"ClubPresident\" cp ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE 1=1 ");
                 using var command = new NpgsqlCommand();
                 command.Connection = connection;
@@ -221,7 +222,7 @@ namespace Introduction.Repository
                         club.DateOfEstablishment = dateResult;
 
                         club.NumberOfMembers = Int32.TryParse(reader["NumberOfMembers"].ToString(), out var numberResult) ? numberResult : null;
-                        clubPresident.Id = Guid.Parse(reader["Id"].ToString());
+                        clubPresident.Id = Guid.Parse(reader["ClubPresidentId"].ToString());
                         club.ClubPresidentId = clubPresident.Id;
                         clubPresident.FirstName = reader["FirstName"].ToString();
                         clubPresident.LastName = reader["LastName"].ToString();
@@ -302,6 +303,28 @@ namespace Introduction.Repository
                 return null;
             }
 
+        }
+
+        public async Task<int> CountClubs()
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(connectionString);
+                var commandText = "SELECT COUNT(*) FROM \"Club\"";
+
+                using var command = new NpgsqlCommand(commandText, connection);
+
+
+                connection.Open();
+
+                var count = await command.ExecuteScalarAsync();
+                return Convert.ToInt32(count);
+
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
 
         

@@ -29,7 +29,7 @@ namespace Introduction.Service
         }
 
 
-        public async Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident)
+        public async Task<Guid?> InsertClubPresidentAsync(ClubPresident clubPresident)
         {
             return await _repository.InsertClubPresidentAsync(clubPresident);
         }

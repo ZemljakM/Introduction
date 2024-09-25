@@ -53,5 +53,10 @@ namespace Introduction.Service
             return clubs;
         }
 
+        public async Task<int> CountClubs()
+        {
+            return await _repository.CountClubs();
+        }
+
     }
 }

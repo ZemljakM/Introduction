@@ -14,7 +14,7 @@ namespace Introduction.Repository.Common
 
         public Task<ClubPresident> GetClubPresidentByIdAsync(Guid id);
 
-        public Task<bool> InsertClubPresidentAsync(ClubPresident clubPresident);
+        public Task<Guid?> InsertClubPresidentAsync(ClubPresident clubPresident);
 
         public Task<bool> UpdateClubPresidentAsync(Guid id, ClubPresident clubPresident);
     }
