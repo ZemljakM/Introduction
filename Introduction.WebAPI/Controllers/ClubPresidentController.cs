@@ -26,7 +26,7 @@ namespace Introduction.WebAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllClubPresidentsAsync(string searchQuery = "", int rpp = 3, int pageNumber = 1, string orderBy = "Id", string orderDirection = "DESC")
+        public async Task<IActionResult> GetAllClubPresidentsAsync(string searchQuery = "", int rpp = 20, int pageNumber = 1, string orderBy = "Id", string orderDirection = "DESC")
         {
             Sorting sorting = new Sorting 
             {

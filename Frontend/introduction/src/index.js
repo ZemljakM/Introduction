@@ -3,11 +3,38 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import ClubDetails from './ClubDetails';
+import AddClub from './AddClub';
+import UpdateClub from './UpdateClub';
+
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
+  {
+    path: "/details/:clubId",
+    element: <ClubDetails />,
+  },
+  {
+    path: "/addClub",
+    element: <AddClub />,
+  },
+  {
+    path: "/editClub/:clubId",
+    element: <UpdateClub/>
+  }
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

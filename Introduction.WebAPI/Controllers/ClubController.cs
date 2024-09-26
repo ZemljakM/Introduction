@@ -81,9 +81,21 @@ namespace Introduction.WebAPI.Controllers
         [HttpGet]
         [Route("Count")]
 
-        public async Task<IActionResult> CountClubs()
+        public async Task<IActionResult> CountClubs(string name = "", string sport = "", DateOnly? dateFrom = null,
+            DateOnly? dateTo = null, int membersFrom = 0, int membersTo = 0, string president = "")
         {
-            var numberOfClubs = await _service.CountClubs();
+            ClubFilter filter = new ClubFilter
+            {
+                Name = name,
+                Sport = sport,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                MembersFrom = membersFrom,
+                MembersTo = membersTo,
+                President = president
+            };
+
+            var numberOfClubs = await _service.CountClubs(filter);
             return Ok(numberOfClubs);
         }
 

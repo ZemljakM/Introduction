@@ -2,6 +2,7 @@
 using Introduction.Model;
 using Introduction.Repository.Common;
 using Npgsql;
+using System.Net.NetworkInformation;
 using System.Text;
 
 namespace Introduction.Repository
@@ -305,21 +306,62 @@ namespace Introduction.Repository
 
         }
 
-        public async Task<int> CountClubs()
+        public async Task<int> CountClubs(ClubFilter filter)
         {
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
-                var commandText = "SELECT COUNT(*) FROM \"Club\"";
+                StringBuilder stringBuilder = new StringBuilder("SELECT COUNT(*) FROM \"Club\" c " +
+                    "LEFT JOIN \"ClubPresident\" cp ON c.\"ClubPresidentId\" = cp.\"Id\" WHERE 1=1 ");
 
-                using var command = new NpgsqlCommand(commandText, connection);
+                using var command = new NpgsqlCommand();
+                command.Connection = connection;
 
+                if (filter != null)
+                {
+                    if (!string.IsNullOrEmpty(filter.Name))
+                    {
+                        stringBuilder.Append(" AND \"Name\" ILIKE @name ");
+                        command.Parameters.AddWithValue("@name", StringExtension.AddWildcardBoth(filter.Name));
+                    }
+                    if (!string.IsNullOrEmpty(filter.Sport))
+                    {
+                        stringBuilder.Append(" AND \"Sport\" = @sport ");
+                        command.Parameters.AddWithValue("@sport", filter.Sport);
+                    }
+                    if (filter.DateFrom != null)
+                    {
+                        stringBuilder.Append(" AND \"DateOfEstablishment\" > @dateFrom ");
+                        command.Parameters.AddWithValue("@dateFrom", filter.DateFrom);
+                    }
+                    if (filter.DateTo != null)
+                    {
+                        stringBuilder.Append(" AND \"DateOfEstablishment\" < @dateTo ");
+                        command.Parameters.AddWithValue("@dateTo", filter.DateTo);
+                    }
+                    if (filter.MembersFrom != 0)
+                    {
+                        stringBuilder.Append(" AND \"NumberOfMembers\" > @membersFrom ");
+                        command.Parameters.AddWithValue("@membersFrom", filter.MembersFrom);
+                    }
+                    if (filter.MembersTo != 0)
+                    {
+                        stringBuilder.Append(" AND \"NumberOfMembers\" < @membersTo ");
+                        command.Parameters.AddWithValue("@membersTo", filter.MembersTo);
+                    }
+                    if (!string.IsNullOrEmpty(filter.President))
+                    {
+                        stringBuilder.Append(" AND (CONCAT(\"FirstName\", ' ', \"LastName\") ILIKE @president " +
+                        "OR CONCAT(\"LastName\", ' ', \"FirstName\") ILIKE @president) ");
+                        command.Parameters.AddWithValue("@president", StringExtension.AddWildcardBoth(filter.President));
+                    }
+                }
 
+                command.CommandText = stringBuilder.ToString();
                 connection.Open();
 
                 var count = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(count);
-
             }
             catch (Exception ex)
             {

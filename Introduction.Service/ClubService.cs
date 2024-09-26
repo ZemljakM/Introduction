@@ -53,9 +53,9 @@ namespace Introduction.Service
             return clubs;
         }
 
-        public async Task<int> CountClubs()
+        public async Task<int> CountClubs(ClubFilter filter)
         {
-            return await _repository.CountClubs();
+            return await _repository.CountClubs(filter);
         }
 
     }

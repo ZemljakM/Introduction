@@ -20,6 +20,6 @@ namespace Introduction.Repository.Common
 
         public Task<Club> GetClubByIdAsync(Guid id);
 
-        public Task<int> CountClubs();
+        public Task<int> CountClubs(ClubFilter filter);
     }
 }

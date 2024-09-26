@@ -1,7 +1,7 @@
 import ClubRow from './ClubRow';
 import './ClubTable.css';
 
-function ClubTable({ clubs, deleteClub, updateClub, selectClub }) {
+function ClubTable({ clubs, deleteClub}) {
     return (
       <table>
         <thead>
@@ -14,7 +14,7 @@ function ClubTable({ clubs, deleteClub, updateClub, selectClub }) {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>{clubs.map((club) => (<ClubRow key={club.id} club={club} deleteClub={deleteClub} updateClub={updateClub} selectClub={selectClub}/>))}</tbody>
+        <tbody>{clubs.map((club) => (<ClubRow key={club.id} club={club} deleteClub={deleteClub}/>))}</tbody>
       </table>
     );
   }

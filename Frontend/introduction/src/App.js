@@ -1,49 +1,59 @@
 import './App.css';
 import ClubTable from './ClubTable';
-import PresidentTable from './PresidentTable';
-import AddClub from './AddClub';
-import AddPresident from './AddPresident';
 import { useState, useEffect } from 'react';
-import UpdateClub from './UpdateClub';
 import axios from 'axios';
-import ClubDetails from './ClubDetails';
 import Paging from './Paging';
 import Sorting from './Sorting';
+import { Link } from 'react-router-dom';
 
 function App() {
   const [list, setList] = useState([]);
-  const [presidents, setPresidents] = useState([]);
-  const [editClubId, setEditClubId] = useState(null);
-  const [selectedClubId, setSelectedClubId] = useState(null);
-
   const [pageNumber, setPageNumber] = useState(1);
   const [totalClubs, setTotalClubs] = useState(0);
   const [sortingBy, setSortingBy] = useState('Name');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const pageSize = 3;
+  const totalPages = Math.ceil(totalClubs / pageSize);
+  const [searchItem, setSearchItem] = useState('');
+  const [membersFrom, setMembersFrom] = useState();
+  const [membersTo, setMembersTo] = useState();
 
   useEffect(() => {
     getClubs();
     countClubs();
-  }, [list, pageNumber, sortingBy]);
+  }, [list, pageNumber, sortingBy, sortOrder, searchItem, membersFrom, membersTo]);
 
 
   async function getClubs(){
-    axios.get("https://localhost:7056/api/Club", {params : {pageNumber:pageNumber, orderBy:sortingBy}})
-      .then(response => { 
+    try {
+      const response = await axios.get("https://localhost:7056/api/Club", {
+        params: {
+          pageNumber: pageNumber,
+          orderBy: sortingBy,
+          orderDirection: sortOrder,
+          name: searchItem,
+          membersFrom: membersFrom,
+          membersTo: membersTo
+        }
+      });
         setList(response.data); 
-      })
-      .catch(error => {
+    } catch (error) {
         console.error("Error fetching clubs: ", error);
-      })
+    }
   }
 
   async function countClubs(){
-    axios.get("https://localhost:7056/api/Club/Count")
-      .then(response => { 
-        setTotalClubs(response.data); 
-      })
-      .catch(error => {
-        console.error("Error fetching clubs: ", error);
-      })
+    try {
+      const response = await axios.get("https://localhost:7056/api/Club/Count", {
+        params: { name: searchItem, membersFrom: membersFrom, membersTo: membersTo }
+      });
+      setTotalClubs(response.data);
+      if (response.data === 0) {
+        setPageNumber(1); 
+      }
+    } catch (error) {
+      console.error("Error fetching clubs: ", error);
+    }
   }
 
 
@@ -53,22 +63,6 @@ function App() {
     }
   }, [list]);
 
-
-  const updateClub = (id) => {
-      setEditClubId(id);
-  };
-
-  const selectClub = (id) => {
-    setSelectedClubId(id);
-  };
-
-  const closeDetails = () => {
-    setSelectedClubId(null);
-  };
-
-  const pageSize = 3;
-  const totalPages = Math.ceil(totalClubs / pageSize);
-
   const handlePaging = (pageNumber) => {
     setPageNumber (pageNumber);
   };
@@ -77,11 +71,15 @@ function App() {
     setSortingBy (sortingBy);
   };
 
+  const handleSortChange = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
   async function deleteClub(clubId){
     try{
       const response = await axios.delete("https://localhost:7056/api/Club" + `/${clubId}`);
       if(response.status === 200){
-          alert("Successfully deleted.");
+          console.log("Successfully deleted.");
       }
     }
     catch(error){
@@ -89,21 +87,20 @@ function App() {
     }
   }
 
-
   return (
     <div>
       <h1>Club List</h1>
-      <Sorting sortingBy={sortingBy} handleSorting={handleSorting}/>
+      <Link to="/addClub">
+        <button>Add New Club</button>
+      </Link>
+      <div>
+        <input type="text" value={searchItem} onChange={(e) => {setSearchItem(e.target.value); setPageNumber(1);}} style={{width:'12em'}} placeholder='Type to search'/>
+        <input type="number" min="0" value={membersFrom} onChange={(e) => setMembersFrom(e.target.value)} style={{width:'12em'}} placeholder='Members from:'/>
+        <input type="number" min="0" value={membersTo} onChange={(e) => setMembersTo(e.target.value)} style={{width:'12em'}} placeholder='Members to:'/>
+        <Sorting sortingBy={sortingBy} handleSorting={handleSorting} sortOrder={sortOrder} handleSortChange={handleSortChange}/>
+      </div>
       <Paging pageNumber={pageNumber} totalPages={totalPages} handlePaging={handlePaging}/>
-      <ClubTable clubs={list} deleteClub={deleteClub} updateClub={updateClub} selectClub={selectClub}/>
-      {selectedClubId && <ClubDetails clubId={selectedClubId} closeDetails={closeDetails}/>}
-      {editClubId 
-        ? <UpdateClub clubs={list} setList={setList} clubId={editClubId} setEditClubId={setEditClubId}/>
-        : <AddClub clubs={list} setList={setList} />
-      }
-      <h1>President List</h1>
-      <PresidentTable presidents={presidents} />
-      <AddPresident presidents={presidents} setPresidents={setPresidents} />
+      <ClubTable clubs={list} deleteClub={deleteClub} />
     </div>
   );
 }

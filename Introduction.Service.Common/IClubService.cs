@@ -20,6 +20,6 @@ namespace Introduction.Service.Common
 
         public Task<List<Club>> GetAllClubsAsync(Sorting sorting, Paging paging, ClubFilter filter);
 
-        public Task<int> CountClubs();
+        public Task<int> CountClubs(ClubFilter filter);
     }
 }

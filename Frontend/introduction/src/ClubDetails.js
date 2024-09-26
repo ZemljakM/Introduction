@@ -1,8 +1,11 @@
 import axios from "axios";
 import { useState, useEffect} from 'react';
 import './ClubDetails.css';
+import { useParams, Link } from "react-router-dom";
+import Button from './Button'
 
-function ClubDetails({clubId, closeDetails}){
+function ClubDetails({}){
+    const { clubId } = useParams();
     const [club, setClub] = useState({});
 
     useEffect(() => {
@@ -19,7 +22,6 @@ function ClubDetails({clubId, closeDetails}){
 
     return (
         <div className="clubDetails">
-            <button className="close-btn" onClick={closeDetails}>X</button>
             <h2>Club Details</h2>
             <p><strong>Name:</strong> {club.name}</p>
             <p><strong>Sport:</strong> {club.sport}</p>
@@ -33,6 +35,7 @@ function ClubDetails({clubId, closeDetails}){
                     <p><strong>Last Name:</strong> {club.clubPresident.lastName}</p>
                 </>
             )}
+            <Link to={"/"}><Button className="backButton" text="Back"/></Link>
         </div>
     );
 }
